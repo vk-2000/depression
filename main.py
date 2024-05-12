@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score, confusion_matrix
 import seaborn as sns
+import pickle
 
 depressed_tweets = pd.read_csv("clean_d_tweets.csv")
 non_depressed_tweets = pd.read_csv("clean_non_d_tweets.csv")
@@ -26,6 +27,9 @@ models = {
     "Logistic Regression": LogisticRegression(),
     "Random Forest": RandomForestClassifier()
 }
+
+best_model = None
+best_accuracy = 0
 
 results = {}
 for model_name, model in models.items():
@@ -62,6 +66,10 @@ for model_name, model in models.items():
         "Confusion Matrix": conf_matrix,
         "Class Distribution": class_distribution
     }
+    
+    if accuracy > best_accuracy:
+        best_accuracy = accuracy
+        best_model = model
 
 print("Model Performance Metrics:")
 for model_name, metrics in results.items():
@@ -106,3 +114,9 @@ for model_name, metrics in results.items():
 
     plt.tight_layout()
     plt.show()
+
+with open('best_model.pkl', 'wb') as file:
+    pickle.dump(best_model, file)
+
+with open('vectorizer.pkl', 'wb') as file:
+    pickle.dump(vectorizer, file)
